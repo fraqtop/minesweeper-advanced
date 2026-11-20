@@ -32,6 +32,11 @@ export const DIFFICULTIES: readonly Difficulty[] = [
   },
 ]
 
+// Must match the `.page { max-width }` in App.vue so the grid is sized
+// to fit the rendered page, not the full viewport (which is wider on
+// desktop and would push the board off the page width).
+export const PAGE_MAX_WIDTH = 760
+
 export const LEADERBOARD_KEY = 'minesweeper_leaderboard'
 
 export const MIN_LONGPRESS_MS = 220

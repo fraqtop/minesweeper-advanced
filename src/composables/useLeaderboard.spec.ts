@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { useLeaderboard } from './useLeaderboard'
+import { useLeaderboard, resetLeaderboardCache } from './useLeaderboard'
 import { LEADERBOARD_KEY } from '@/constants'
 
 describe('useLeaderboard', () => {
   beforeEach(() => {
     localStorage.clear()
+    resetLeaderboardCache()
   })
 
   afterEach(() => {

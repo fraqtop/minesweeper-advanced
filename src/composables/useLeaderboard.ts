@@ -6,6 +6,12 @@ const STORAGE_MAX = 10
 
 let cache: LeaderboardEntry[] | null = null
 
+// Re-syncs the in-memory cache from storage. Not part of the public composable
+// API; used by tests to reset state between runs.
+export const resetLeaderboardCache = (): void => {
+  cache = null
+}
+
 const readFromStorage = (): LeaderboardEntry[] => {
   if (cache) return cache
   try {

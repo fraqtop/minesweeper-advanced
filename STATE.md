@@ -21,22 +21,24 @@ Plan: `/home/fraq/.opencode/plan/minesweeper-plan.md`.
 - [x] Locate plan (`/home/fraq/.opencode/plan/minesweeper-plan.md`)
 - [x] Phase 1 Scaffolding & dependencies (package.json, tsconfig, index.html, vite/vitest config)
 - [x] Phase 2 Types & constants (`src/types.ts`, `src/constants.ts`)
-- [x] Phase 3 Pure logic (`src/utils/grid.ts`)
-- [ ] Phase 4 Responsive grid
-- [ ] Phase 5 Game store
-- [ ] Phase 6 Leaderboard
-- [ ] Phase 7 Colors
-- [ ] Phase 8 UI components
-- [ ] Phase 9 Long-press
-- [ ] Phase 10 Styling
-- [ ] Phase 11 Tests
+- [x] Phase 3 Pure logic (`utils/grid.ts`)
+- [x] Phase 4 Responsive grid (`useResponsiveGrid.ts`)
+- [x] Phase 5 Game store (`useMinesweeper.ts`)
+- [x] Phase 6 Leaderboard (`useLeaderboard.ts`)
+- [x] Phase 7 Colors (`utils/color.ts`)
+- [x] Phase 8 UI components (App.vue, Board.vue, Cell.vue, Controls.vue, Leaderboard.vue)
+- [x] Phase 9 Long-press (Cell.vue: press=220ms -> flag; click=reveal; right-click=flag)
+- [~] Phase 10 Styling (Bootstrap 5 applied, scoped styles)
+- [x] Phase 11 Tests (grid 11, useMinesweeper 9, useLeaderboard 6, color 4 = 30 total)
 - [ ] Phase 12 Build & acceptance
 
 ## Notes
 - All UI in English (plan rule 14).
 - localStorage for leaderboard, no backend.
-- Mines placed after 1st click; 1st cell + 3×3 safe (plan 4, 10).
-- Installed deps: vue, bootstrap, bootstrap-icons + vite/vitest. esbuild postinstall was blocked (needs approval for tests later).
+- Mines placed after 1st click; 1st cell + 3×3 safe.
+- FIXED: Cell.vue left-click now reveals (was middle-click only, dead gesture for most users). Long-press flags; right-click flags on desktop.
+- FIXED TEST INFRA: vitest jsdom didn't populate `localStorage`. Root cause: Node >=22 ships a disabled built-in `localStorage` on `globalThis`, so setup shim never ran. Fixed by unconditionally installing a jsdom-backed Storage in `test/setup.ts`. Added `resetLeaderboardCache()` to reset the module-level storage cache between tests.
+- All 30 tests pass. vue-tsc clean, vite build OK (~76KB JS).
 
 ---
-Last update: Phase 3 done. Running typecheck before next phase.
+Last update: Phase 11 done (all 30 tests green).

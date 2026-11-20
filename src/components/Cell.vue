@@ -22,7 +22,6 @@ const longpressTriggered = ref(false)
 
 const startPress = (): void => {
   longpressTriggered.value = false
-  pointerDown = true
   pressTimer = setTimeout(() => {
     longpressTriggered.value = true
     emit('flag', props.index)

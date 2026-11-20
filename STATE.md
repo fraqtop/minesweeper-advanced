@@ -30,7 +30,7 @@ Plan: `/home/fraq/.opencode/plan/minesweeper-plan.md`.
 - [x] Phase 9 Long-press (Cell.vue: press=220ms -> flag; click=reveal; right-click=flag)
 - [~] Phase 10 Styling (Bootstrap 5 applied, scoped styles)
 - [x] Phase 11 Tests (grid 11, useMinesweeper 9, useLeaderboard 6, color 4 = 30 total)
-- [ ] Phase 12 Build & acceptance
+- [x] Phase 12 Build & acceptance
 
 ## Notes
 - All UI in English (plan rule 14).
@@ -39,6 +39,7 @@ Plan: `/home/fraq/.opencode/plan/minesweeper-plan.md`.
 - FIXED: Cell.vue left-click now reveals (was middle-click only, dead gesture for most users). Long-press flags; right-click flags on desktop.
 - FIXED TEST INFRA: vitest jsdom didn't populate `localStorage`. Root cause: Node >=22 ships a disabled built-in `localStorage` on `globalThis`, so setup shim never ran. Fixed by unconditionally installing a jsdom-backed Storage in `test/setup.ts`. Added `resetLeaderboardCache()` to reset the module-level storage cache between tests.
 - All 30 tests pass. vue-tsc clean, vite build OK (~76KB JS).
+- Phase 12 (Build & acceptance) DONE: `npm run build` (`vue-tsc && vite build`) passes; production preview (:4173) renders fully, left-click reveals (floods open 52 cells on first click), right-click flags. Browser tester verdict PASS.
 
 ---
 Last update: Phase 11 done (all 30 tests green).

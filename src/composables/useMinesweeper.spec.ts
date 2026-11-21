@@ -18,6 +18,7 @@ describe('useMinesweeper', () => {
   })
   afterEach(() => {
     vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('starts in IDLE status', () => {
@@ -29,6 +30,13 @@ describe('useMinesweeper', () => {
 
   it('places mines after the first click, keeping the click and neighbors safe', () => {
     const store = useMinesweeper(smallDifficulty)
+    // Deterministic layout: mines at 0, 1 and 3. The opening flood from cell 12
+    // leaves cells 2 and 4 closed, so this is still a game in progress; a random
+    // layout could reveal every safe cell and win on the very first click.
+    vi.spyOn(Math, 'random')
+      .mockReturnValueOnce(0)
+      .mockReturnValueOnce(0.04)
+      .mockReturnValueOnce(0.12)
     const click = 12
     store.reveal(click)
 
@@ -80,9 +88,14 @@ describe('useMinesweeper', () => {
 
   it('loses when clicking a mine', () => {
     const store = useMinesweeper(smallDifficulty)
-    // Reveal a central cell to run placeMines; mines now exist.
+    // Deterministic mine placement. placeMines is seeded so it never lands on
+    // the safe opening cell (12) or its neighbours; the three mines fall at
+    // 0, 1 and 3. This test can never win on open.
+    vi.spyOn(Math, 'random')
+      .mockReturnValueOnce(0.0) // candidate 0
+      .mockReturnValueOnce(0.05) // candidate 1
+      .mockReturnValueOnce(0.14) // candidate 3
     store.reveal(12)
-    // Pick an index that is a real mine (not the safe opening cell) and reveal it.
     const mineIndex = store.state.cells.findIndex((c) => c.isMine)
     expect(mineIndex).toBeGreaterThanOrEqual(0)
     store.reveal(mineIndex)

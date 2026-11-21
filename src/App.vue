@@ -6,14 +6,33 @@ import Leaderboard from '@/components/Leaderboard.vue'
 import { useMinesweeper } from '@/composables/useMinesweeper'
 import { useLeaderboard } from '@/composables/useLeaderboard'
 import { useResponsiveGrid } from '@/composables/useResponsiveGrid'
+import { useSettings } from '@/composables/useSettings'
 import { DIFFICULTIES, DEFAULT_LONGPRESS_MS } from '@/constants'
 import { DifficultyLevel } from '@/types'
 import type { Difficulty } from '@/types'
 
 const levelList = [...DIFFICULTIES] as Difficulty[]
-const selectedLevel = ref<DifficultyLevel>(DifficultyLevel.BEGINNER)
+const settings = useSettings()
+// Restore the level the user last played; fall back to Beginner when unset.
+const selectedLevel = ref<DifficultyLevel>(
+  settings.settings.value.level ?? DifficultyLevel.BEGINNER,
+)
 
+const isCustom = computed(() => selectedLevel.value === DifficultyLevel.CUSTOM)
+
+// For a preset level this is the preset; for CUSTOM it reflects the editable
+// W/H/💣 inputs (stored in `settings`). Because the store reads this getter as
+// its source of truth, the game always uses the size and mines the user chose.
 const currentDifficulty = computed<Difficulty>(() => {
+  if (isCustom.value) {
+    return {
+      id: DifficultyLevel.CUSTOM,
+      name: 'Custom',
+      cols: settings.settings.value.cols,
+      rows: settings.settings.value.rows,
+      mines: settings.safeMines.value,
+    }
+  }
   const match = levelList.find((d) => d.id === selectedLevel.value)
   return match ?? levelList[0]
 })
@@ -25,13 +44,44 @@ const responsiveGrid = useResponsiveGrid(
   () => store.state.rows,
 )
 
+// Persist the user's zoom and let it drive the grid zoom so reloads keep the
+// zoom the last session used. `useSettings` reads the persisted zoom from
+// localStorage synchronously on its first call, so set the grid zoom from it
+// here once on mount; the watcher below keeps live zoom changes persisted.
+responsiveGrid.zoom.value = settings.settings.value.zoom
+
+watch(() => settings.settings.value.zoom, (zoom) => {
+  responsiveGrid.zoom.value = zoom
+})
+watch(responsiveGrid.zoom, (zoom) => {
+  settings.setZoom(zoom)
+})
+
 const onLevelChange = (level: DifficultyLevel): void => {
   selectedLevel.value = level
+  settings.setLevel(level)
+  // CUSTOM resumes the persisted custom config; presets always use their own
+  // fixed dimensions. Neither touches zoom, which is kept independent.
   store.reset()
 }
 
 const onReset = (): void => {
   store.reset()
+}
+
+// Editing a custom board commits the value, persists it, and restarts the
+// game so the board reflects the new size/mine count immediately.
+const onColsChange = (cols: number): void => {
+  settings.setCols(cols)
+  if (isCustom.value) store.reset()
+}
+const onRowsChange = (rows: number): void => {
+  settings.setRows(rows)
+  if (isCustom.value) store.reset()
+}
+const onMinesChange = (mines: number): void => {
+  settings.setMines(mines)
+  if (isCustom.value) store.reset()
 }
 
 const onReveal = (index: number): void => {
@@ -49,7 +99,6 @@ watch(
       leaderboard.save(store.state.time, currentDifficulty.value.name)
     }
   },
-  { once: true },
 )
 
 const difficultyLabel = computed(() => currentDifficulty.value.name)
@@ -73,8 +122,14 @@ const statusEmoji = computed(() => {
     <section class="panel">
       <Controls
         :current-level="selectedLevel"
+        :cols="settings.settings.value.cols"
+        :rows="settings.settings.value.rows"
+        :mines="settings.safeMines.value"
         @level-change="onLevelChange"
         @reset="onReset"
+        @cols-change="onColsChange"
+        @rows-change="onRowsChange"
+        @mines-change="onMinesChange"
       />
     </section>
 

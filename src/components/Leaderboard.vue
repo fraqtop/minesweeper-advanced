@@ -13,10 +13,19 @@ const emit = defineEmits<{
 const formattedEntries = computed(() =>
   props.entries.map((entry) => ({
     ...entry,
-    formattedTime: new Date(entry.createdAt).toLocaleTimeString(),
+    // `score` stores the win time in seconds.
+    formattedTime: formatDuration(entry.score),
     formattedDate: new Date(entry.createdAt).toLocaleDateString(),
   })),
 )
+
+// Format a win time in seconds as `m:ss` for the leaderboard.
+const formatDuration = (seconds: number): string => {
+  const secs = Math.max(0, Math.round(seconds))
+  const m = Math.floor(secs / 60)
+  const s = secs % 60
+  return `${m}:${String(s).padStart(2, '0')}`
+}
 </script>
 
 <template>

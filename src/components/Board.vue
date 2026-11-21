@@ -15,7 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const gridStyle = () => ({
-  gridTemplateColumns: `repeat(${props.cols}, minmax(0, ${props.cellSize}px))`,
+  gridTemplateColumns: `repeat(${props.cols}, ${props.cellSize}px)`,
 })
 </script>
 
@@ -42,7 +42,9 @@ const gridStyle = () => ({
 <style scoped>
 .board-wrapper {
   display: flex;
-  justify-content: center;
+  /* `safe` keeps the left edge reachable when zoom makes the board wider than
+     the wrapper; without it centered overflow is clipped on the left. */
+  justify-content: safe center;
   align-items: center;
   padding: 16px;
   overflow: auto;
@@ -50,6 +52,9 @@ const gridStyle = () => ({
 
 .board {
   display: grid;
+  /* A flex item shrinks by default. With fixed-width cells that shrinks the
+     board border while the cells keep their width and spill outside it. */
+  flex: 0 0 auto;
   gap: 2px;
   padding: 6px;
   background: #bdbdbd;

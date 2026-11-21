@@ -15,7 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const gridStyle = () => ({
-  gridTemplateColumns: `repeat(${props.cols}, minmax(0, 1fr))`,
+  gridTemplateColumns: `repeat(${props.cols}, minmax(0, ${props.cellSize}px))`,
 })
 </script>
 

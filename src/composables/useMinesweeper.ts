@@ -87,20 +87,21 @@ export const useMinesweeper = (difficulty: () => Difficulty) => {
     state.cells = cells
   }
 
-  // Flood-reveal: reveal the target and reveal neighbors until reaching
-  // a numbered cell (whose number bounds the reveal).
+  // Flood-reveal: reveal the target and cascade through the region of empty
+  // (adjacentMineCount === 0) cells. A numbered cell is revealed on its own and
+  // acts as the boundary of the flood — the cascade must NOT cross it, otherwise
+  // a single click bleeds across the whole board.
   const floodReveal = (index: number): void => {
     const cells = state.cells
-    if (cells[index].isRevealed || cells[index].isFlagged) return
-
-    const neighbors = getNeighborCells(index, { cols: state.cols, rows: state.rows })
-    const needed = cells[index].adjacentMineCount
-    const safeNeighbors = neighbors.filter((n) => !cells[n].isMine)
-    if (safeNeighbors.length < needed) return
+    if (cells[index].isMine || cells[index].isRevealed || cells[index].isFlagged) return
 
     cells[index] = { ...cells[index], isRevealed: true }
-    safeNeighbors.forEach((n) => {
-      if (!cells[n].isRevealed) floodReveal(n)
+
+    if (cells[index].adjacentMineCount > 0) return
+
+    const neighbors = getNeighborCells(index, { cols: state.cols, rows: state.rows })
+    neighbors.forEach((n) => {
+      if (!cells[n].isMine) floodReveal(n)
     })
   }
 
@@ -127,14 +128,12 @@ export const useMinesweeper = (difficulty: () => Difficulty) => {
 
     floodReveal(index)
 
-    const mineCells = new Set<number>(
-      state.cells
-        .map((_, i) => i)
-        .filter((i) => state.cells[i].isMine),
-    )
-    const nonMineRevealed = state.cells.every((_, i) => {
-      if (mineCells.has(i)) return false
-      return state.cells[i].isRevealed
+    // Win when every NON-mine cell has been revealed. Mine cells are never
+    // a win requirement — they're shown only after a loss — so they must be
+    // skipped, not treated as an outstanding cell that must be revealed.
+    const nonMineRevealed = state.cells.every((cell) => {
+      if (!cell.isMine) return cell.isRevealed
+      return true
     })
     if (nonMineRevealed) {
       state.status = 'WON'

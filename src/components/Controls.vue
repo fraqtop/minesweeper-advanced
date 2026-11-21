@@ -31,13 +31,6 @@ const emit = defineEmits<{
         </option>
       </select>
     </div>
-
-    <button
-      class="btn btn-primary"
-      @click="emit('reset')"
-    >
-      New Game
-    </button>
   </div>
 </template>
 

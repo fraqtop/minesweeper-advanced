@@ -7,7 +7,7 @@ const NUMBER_COLORS: Record<number, string> = {
   2: '#43a047', // Green
   3: '#e53935', // Red
   4: '#8e24aa', // Purple
-  5: '#c0ca33', // Lime
+  5: '#a1881f', // Lime
   6: '#00acc1', // Cyan
   7: '#37474f', // Dark gray/black
   8: '#757575', // Gray

@@ -53,7 +53,7 @@ watch(
 )
 
 const difficultyLabel = computed(() => currentDifficulty.value.name)
-const timeLabel = computed(() => `${store.state.time}s`)
+const secondsLabel = computed(() => `${store.state.time}s`)
 const remainingLabel = computed(() => `${store.state.cells.filter((c) => c.isMine).length - store.state.flagsUsed}`)
 
 const statusEmoji = computed(() => {
@@ -84,6 +84,16 @@ const statusEmoji = computed(() => {
           <span class="status-label">Level</span>
           <span class="status-value">{{ difficultyLabel }}</span>
         </div>
+        <div class="status-pill">
+          <span class="status-label">Time</span>
+          <span class="status-value">{{ secondsLabel }}</span>
+        </div>
+        <button
+          class="btn btn-primary"
+          @click="onReset"
+        >
+          New Game
+        </button>
         <div class="status-face">{{ statusEmoji }}</div>
         <div class="status-pill">
           <span class="status-label">Mines</span>
@@ -101,10 +111,6 @@ const statusEmoji = computed(() => {
       />
 
       <div class="status-bar">
-        <div class="status-pill">
-          <span class="status-label">Time</span>
-          <span class="status-value">{{ timeLabel }}</span>
-        </div>
         <button
           class="btn btn-sm btn-outline-primary"
           @click="responsiveGrid.zoomIn"
@@ -137,8 +143,8 @@ const statusEmoji = computed(() => {
 
 <style scoped>
 .page {
-  max-width: 760px;
-  margin: 0 auto;
+  width: 100%;
+  min-width: 100vw;
   padding: 24px;
 }
 

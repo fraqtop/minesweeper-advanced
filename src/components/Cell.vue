@@ -60,6 +60,7 @@ const onContextMenu = (event: MouseEvent): void => {
   <div
     ref="cellRef"
     class="cell"
+    :class="{ 'cell-revealed': cell.isRevealed }"
     :style="{ width: cellSize + 'px', height: cellSize + 'px', fontSize: cellSize * 0.4 + 'px' }"
     @pointerdown="onPointerDown"
     @pointerup="onPointerUp"
@@ -99,6 +100,17 @@ const onContextMenu = (event: MouseEvent): void => {
 
 .cell:active {
   border-color: #ffffff;
+}
+
+.cell-revealed {
+  /* Clearly distinct from raised cells: light checkerboard + flat border,
+     the classic Minesweeper revealed-cell look. */
+  background-color: #f3f3f3;
+  background-image:
+    repeating-conic-gradient(#ececec 0 25%, #ffffff 0 50%);
+  background-size: 12px 12px;
+  border: 1px solid #9a9a9a;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 .cell-number {
